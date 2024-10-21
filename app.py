@@ -10,7 +10,6 @@ web_image_checker_agent = Agent(
     verbose=True
 )
 
-
 # Criando o agente responsável por gerar o BI
 bi_audit_agent = Agent(
     role='Data BI Auditor',
@@ -20,7 +19,7 @@ bi_audit_agent = Agent(
     verbose=True
 )
 
-# Criando a task
+# Criando a task para verificar imagens
 check_images_task = Task(
     description=(
         "Verifique se todas as tags de imagem em uma página web possuem o atributo 'alt'. "
@@ -35,21 +34,28 @@ check_images_task = Task(
 # Criando a task de auditoria e BI
 bi_audit_task = Task(
     description=(
-        "Analise os dados fornecidos, gere gráficos e identifique possíveis anomalias para auditoria. "
-        "Você deve fornecer um resumo estatístico dos dados e apontar quaisquer padrões ou outliers que encontrar."
+        "Analise os dados fornecidos e gere um relatório de BI com gráficos e insights."
+        "Esses dados podem incluir as informações coletadas sobre as imagens e qualquer outro dado fornecido."
     ),
     expected_output='Um relatório com insights de BI e um gráfico salvo para visualização.',
     tools=[generate_bi_report],
     agent=bi_audit_agent,
 )
 
-# Criando o Crew
-crew = Crew(
+# Fase 1: Criando o Crew para o agente de verificação de imagens
+web_image_crew = Crew(
     agents=[web_image_checker_agent],
     tasks=[check_images_task],
     process=Process.sequential
 )
 
-# Executando o processo para verificar imagens na página
-result = crew.kickoff(inputs={'url': 'https://www.setdig.ms.gov.br/'})
-print(result)
+
+
+# Executando o processo de verificação de imagens
+result_images = web_image_crew.kickoff(inputs={'url': 'https://www.setdig.ms.gov.br/'})
+print("Resultado da Verificação de Imagens:", result_images)
+
+
+    
+    
+
